@@ -1,0 +1,23 @@
+server {
+    listen  80;
+    server_name rss.bitsflow.org;
+
+    root /www/ttrss; ##配置站点文件目录
+    index index.html index.htm index.php;
+
+    access_log /var/log/nginx/ttrss_access.log;
+    error_log /var/log/nginx/ttrss_error.log info;
+
+    location / {
+        index           index.php;
+    }
+
+    location ~ \.php$ {
+        try_files $uri = 404; #Prevents autofixing of path which could be used for exploit
+        fastcgi_pass unix:/var/run/php5-fpm.sock;
+        fastcgi_index index.php;
+        include /usr/local/nginx/fastcgi_params;
+		fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+    }
+
+}
